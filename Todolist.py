@@ -1,68 +1,52 @@
-import tkinter as tk
-from tkinter import messagebox
-def load_tasks():
-    try:
-        with open("tasks.txt", "r") as file:
-            tasks = file.readlines()
-        return [task.strip() for task in tasks]
-    except FileNotFoundError:
-        return []
-def save_tasks(tasks):
-    with open("tasks.txt", "w") as file:
-        for task in tasks:
-            file.write(task + "\n")
-def update_task_list():
-    task_listbox.delete(0, tk.END)
-    for task in tasks:
-        task_listbox.insert(tk.END, task)
-def add_task():
-    new_task = task_entry.get()
-    if new_task != "":
-        tasks.append(new_task)
-        save_tasks(tasks)
-        task_entry.delete(0, tk.END)
-        update_task_list()
+def show_menu():
+    print("\nTo-Do List Menu:")
+    print("1. Add Task")
+    print("2. View Tasks")
+    print("3. Remove Task")
+    print("4. Exit")
+
+def add_task(tasks):
+    task = input("Enter the task you want to add: ")
+    tasks.append(task)
+    print(f"Task '{task}' added!")
+
+def view_tasks(tasks):
+    if tasks:
+        print("\nYour To-Do List:")
+        for idx, task in enumerate(tasks, 1):
+            print(f"{idx}. {task}")
     else:
-        messagebox.showwarning("Input Error", "Please enter a task.")
-def delete_task():
+        print("Your to-do list is empty.")
+
+def remove_task(tasks):
+    view_tasks(tasks)
     try:
-        selected_task_index = task_listbox.curselection()[0]
-        task = tasks.pop(selected_task_index)
-        save_tasks(tasks)
-        update_task_list()
-        messagebox.showinfo("Task Deleted", f"Task '{task}' has been deleted.")
-    except IndexError:
-        messagebox.showwarning("Selection Error", "Please select a task to delete.")
-def mark_completed():
-    try:
-        selected_task_index = task_listbox.curselection()[0]
-        tasks[selected_task_index] = tasks[selected_task_index] + " (Completed)"
-        save_tasks(tasks)
-        update_task_list()
-        messagebox.showinfo("Task Completed", "Task marked as completed.")
-    except IndexError:
-        messagebox.showwarning("Selection Error", "Please select a task to mark as completed.")
-root = tk.Tk()
-root.title("To-Do List Application")
-root.config(bg="#f5f5f5")
+        task_num = int(input("\nEnter the task number to remove: "))
+        if 1 <= task_num <= len(tasks):
+            removed_task = tasks.pop(task_num - 1)
+            print(f"Task '{removed_task}' removed!")
+        else:
+            print("Invalid task number.")
+    except ValueError:
+        print("Please enter a valid number.")
 
-tasks = load_tasks()
+def main():
+    tasks = []
+    while True:
+        show_menu()
+        choice = input("\nChoose an option (1/2/3/4): ")
+        
+        if choice == '1':
+            add_task(tasks)
+        elif choice == '2':
+            view_tasks(tasks)
+        elif choice == '3':
+            remove_task(tasks)
+        elif choice == '4':
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-task_entry = tk.Entry(root, width=40, bg="#e0e0e0", fg="#333333", font=("Arial", 14))
-task_entry.pack(pady=10)
-
-add_button = tk.Button(root, text="Add Task", command=add_task, bg="#4CAF50", fg="white", font=("Arial", 12))
-add_button.pack(pady=5)
-
-delete_button = tk.Button(root, text="Delete Task", command=delete_task, bg="#f44336", fg="white", font=("Arial", 12))
-delete_button.pack(pady=5)
-
-complete_button = tk.Button(root, text="Mark Completed", command=mark_completed, bg="#2196F3", fg="white", font=("Arial", 12))
-complete_button.pack(pady=5)
-
-task_listbox = tk.Listbox(root, width=40, height=10, bg="#ffffff", fg="#333333", font=("Arial", 12), selectmode=tk.SINGLE)
-task_listbox.pack(pady=10)
-
-update_task_list()
-
-root.mainloop()
+if __name__ == "__main__":
+    main()     
